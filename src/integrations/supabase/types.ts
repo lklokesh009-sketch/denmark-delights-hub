@@ -14,16 +14,154 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bank_details: {
+        Row: {
+          account_name: string | null
+          account_number: string | null
+          bank_name: string | null
+          id: number
+          ifsc: string | null
+          updated_at: string
+          upi_id: string | null
+        }
+        Insert: {
+          account_name?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          id?: number
+          ifsc?: string | null
+          updated_at?: string
+          upi_id?: string | null
+        }
+        Update: {
+          account_name?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          id?: number
+          ifsc?: string | null
+          updated_at?: string
+          upi_id?: string | null
+        }
+        Relationships: []
+      }
+      menu_items: {
+        Row: {
+          available: boolean
+          category: string
+          created_at: string
+          cuisine: string
+          description: string | null
+          id: string
+          name: string
+          price: number
+          sort: number
+        }
+        Insert: {
+          available?: boolean
+          category: string
+          created_at?: string
+          cuisine: string
+          description?: string | null
+          id?: string
+          name: string
+          price: number
+          sort?: number
+        }
+        Update: {
+          available?: boolean
+          category?: string
+          created_at?: string
+          cuisine?: string
+          description?: string | null
+          id?: string
+          name?: string
+          price?: number
+          sort?: number
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          address: string | null
+          branch: number
+          created_at: string
+          customer_name: string
+          id: string
+          items: Json
+          order_type: string
+          payment_method: string
+          phone: string
+          status: string
+          total: number
+        }
+        Insert: {
+          address?: string | null
+          branch: number
+          created_at?: string
+          customer_name: string
+          id?: string
+          items: Json
+          order_type: string
+          payment_method: string
+          phone: string
+          status?: string
+          total: number
+        }
+        Update: {
+          address?: string | null
+          branch?: number
+          created_at?: string
+          customer_name?: string
+          id?: string
+          items?: Json
+          order_type?: string
+          payment_method?: string
+          phone?: string
+          status?: string
+          total?: number
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          branch: number | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          branch?: number | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          branch?: number | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_manage_branch: {
+        Args: { _branch: number; _user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "owner" | "branch_manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +288,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["owner", "branch_manager"],
+    },
   },
 } as const
