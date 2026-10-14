@@ -60,10 +60,11 @@ function SignIn() {
   const submit = async () => {
     if (mode === "up") {
       const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/owner` } });
-      return error ? toast.error(error.message) : toast.success("Check your email to confirm your account.");
+      if (error) toast.error(error.message); else toast.success("Check your email to confirm your account.");
+      return;
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (data?.nextLevel === "aal2" && data.currentLevel !== "aal2") {
       const { data: f } = await supabase.auth.mfa.listFactors();
@@ -223,7 +224,7 @@ function MenuEditor() {
   };
   const addItem = async () => {
     const price = Number(n.price);
-    if (!n.name || !n.category || !(price > 0)) return toast.error("Fill name, category and price");
+    if (!n.name || !n.category || !(price > 0)) { toast.error("Fill name, category and price"); return; }
     const { error } = await supabase.from("menu_items").insert({ ...n, price, sort: items.length + 1 });
     if (error) toast.error(error.message); else { setN({ name: "", category: "", cuisine: "Arabian", price: "" }); refresh(); }
   };
@@ -323,23 +324,23 @@ function Security({ user }: { user: User }) {
 
   const startEnroll = async () => {
     const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setEnroll({ id: data.id, qr: data.totp.qr_code, secret: data.totp.secret });
   };
   const confirmEnroll = async () => {
     if (!enroll) return;
     const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: enroll.id, code });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Two-step verification enabled"); setEnroll(null); setCode(""); load();
   };
   const changeEmail = async () => {
-    if (!factor || factor.status !== "verified") return toast.error("Enable two-step verification first");
+    if (!factor || factor.status !== "verified") { toast.error("Enable two-step verification first"); return; }
     const { error: pwErr } = await supabase.auth.signInWithPassword({ email: user.email!, password: pw });
-    if (pwErr) return toast.error("Password incorrect");
+    if (pwErr) { toast.error("Password incorrect"); return; }
     const { error: mfaErr } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code: emailCode });
-    if (mfaErr) return toast.error("Authenticator code incorrect");
+    if (mfaErr) { toast.error("Authenticator code incorrect"); return; }
     const { error } = await supabase.auth.updateUser({ email: newEmail });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Confirmation links sent to the old and new email addresses");
     setPw(""); setEmailCode(""); setNewEmail("");
   };

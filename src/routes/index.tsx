@@ -161,8 +161,8 @@ function Checkout({ cart, setQty, clear }: { cart: CartLine[]; setQty: (id: stri
   if (!cart.length) return <p className="mt-8 text-center text-muted-foreground">Your cart is empty.</p>;
 
   const place = async () => {
-    if (!name.trim() || !/^[0-9+ ]{10,15}$/.test(phone.trim())) return toast.error("Enter your name and a valid phone number");
-    if (orderType === "delivery" && !address.trim()) return toast.error("Enter delivery address");
+    if (!name.trim() || !/^[0-9+ ]{10,15}$/.test(phone.trim())) { toast.error("Enter your name and a valid phone number"); return; }
+    if (orderType === "delivery" && !address.trim()) { toast.error("Enter delivery address"); return; }
     setBusy(true);
     const { error } = await supabase.from("orders").insert({
       branch: Number(branch),
@@ -175,7 +175,7 @@ function Checkout({ cart, setQty, clear }: { cart: CartLine[]; setQty: (id: stri
       total,
     });
     setBusy(false);
-    if (error) return toast.error("Could not place order. Please try again.");
+    if (error) { toast.error("Could not place order. Please try again."); return; }
     toast.success("Order sent to the restaurant! We'll call you shortly.");
     clear();
     setStep(1);
